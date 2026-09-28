@@ -1,0 +1,39 @@
+{
+  "name": "fcn-tracker-public",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Portfolio edition of an FCN structured-product monitoring platform (synthetic data only).",
+  "engines": {
+    "node": ">=20.9.0"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "test": "node --import tsx --test \"__tests__/**/*.test.ts\"",
+    "check:public": "python scripts/check_public.py",
+    "test:scanner": "python -m unittest discover -s scripts -p \"test_*.py\""
+  },
+  "dependencies": {
+    "next": "15.5.26",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
+    "recharts": "^3.8.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.19.17",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "autoprefixer": "^10.5.0",
+    "postcss": "^8.5.14",
+    "tailwindcss": "^3.4.19",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  },
+  "overrides": {
+    "next": {
+      "postcss": "^8.5.28"
+    }
+  }
+}

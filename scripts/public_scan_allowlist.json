@@ -1,0 +1,56 @@
+[
+  {
+    "path": ".gitignore",
+    "category": "hosting-platform-reference",
+    "sha256": "c993aa5547ad301584d3bd4a7530005ac7c30acc87b5bba35cbfd925bcb6f979",
+    "reason": "Ignore rule that keeps deploy-CLI link metadata out of Git; contains no identifiers."
+  },
+  {
+    "path": "PUBLIC_READINESS_AUDIT.md",
+    "category": "end-user-reference",
+    "sha256": "eb82b680109ee9a3b3c47e8b191306635c1be22e475d2afd26b58299c7b3172d",
+    "reason": "Required readiness statement confirming that no production personal data is included."
+  },
+  {
+    "path": "PUBLIC_READINESS_AUDIT.md",
+    "category": "registry-code-term",
+    "sha256": "9c3d094e03f4775a105fd1f091ea26c29073509c01c95e50ee64876dc3da9ee9",
+    "reason": "Required readiness statement that real registry records were removed; names the registry only."
+  },
+  {
+    "path": "docs/screenshots/landing.png",
+    "category": "binary-file",
+    "sha256": "bc4928806072f8dbd05d31490cc2917a7074e9b07e9d9f79f4124cbf02861bb1",
+    "reason": "Screenshot of the synthetic landing page; reviewed visually, shows demo content only."
+  },
+  {
+    "path": "docs/screenshots/product-demo-fcn-001.png",
+    "category": "binary-file",
+    "sha256": "df19505ff4c2a8e48ff84ea4b5dc277450f1c1b5ac260ff6ed7f463e69fbe6dc",
+    "reason": "Screenshot of synthetic product DEMO-FCN-001; reviewed visually, demo content only."
+  },
+  {
+    "path": "docs/screenshots/product-demo-fcn-003.png",
+    "category": "binary-file",
+    "sha256": "d522df1573c7e973e59a6aaf2c673f97c2c54eff626619918ce5f34c1305732a",
+    "reason": "Screenshot of synthetic product DEMO-FCN-003; reviewed visually, demo content only."
+  },
+  {
+    "path": "package-lock.json",
+    "category": "end-user-reference",
+    "sha256": "4cf6ecdf366505c83dc0c5152d450f650ebcb2e184f5e3703d8be591ad2a9834",
+    "reason": "Name of an npm dependency of the framework (server/browser boundary helper); not a person."
+  },
+  {
+    "path": "package-lock.json",
+    "category": "end-user-reference",
+    "sha256": "6e5bdc43e02e2fe5d3a87a8bde13e8b720c3335bbfe8885e87888eea702faf88",
+    "reason": "Name of an npm dependency of the framework (server/browser boundary helper); not a person."
+  },
+  {
+    "path": "package-lock.json",
+    "category": "end-user-reference",
+    "sha256": "bd15241dd269287ee53058728d3960062993938f8e2eac2146ac0488a7fc1de0",
+    "reason": "Name of an npm dependency of the framework (server/browser boundary helper); not a person."
+  }
+]

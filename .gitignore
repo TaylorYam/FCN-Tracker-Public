@@ -1,0 +1,21 @@
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+next-env.d.ts
+
+# local environment files — the portfolio edition needs none
+.env
+.env*
+
+# hosting-platform link metadata created by a deploy CLI
+.vercel/
+
+*.log
+.DS_Store
+Thumbs.db
+
+# local tooling
+.claude/
+__pycache__/
+*.pyc
