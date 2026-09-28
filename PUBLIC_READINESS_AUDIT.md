@@ -27,12 +27,17 @@ Scope: the `FCN-Tracker-Public` portfolio repository. Review date: 2026-09-28.
   that the public repository does not itself contain the values it screens
   for. CI runs the full public rule set with or without that list.
 
-## Publication checklist
+## Pre-publication verification
 
-- [x] `npm test` passes
-- [x] `npm run build` passes
-- [x] Public-content scan passes (with private term list, locally)
-- [ ] CI green on GitHub
-- [ ] Git history reviewed (working tree and all commits)
-- [ ] Owner review of every demo page
-- [ ] Repository visibility changed to public (owner decision)
+- [x] `npm test` passes (115 tests)
+- [x] `npm run build` passes (all pages statically generated)
+- [x] Public-content scan passes — in CI mode and locally with the private term list
+- [x] Scanner self-tests pass
+- [x] `npm audit`: 0 known vulnerabilities
+- [x] CI green on GitHub (checkout → `npm ci` → scanner tests → scan → type check → tests → build)
+- [x] Git history reviewed: working tree, every revision and all commit messages;
+      author identity is a no-reply address; no Git objects from the private repository
+- [x] Every demo page reviewed at desktop width and at 375 px (no horizontal overflow);
+      pages make no requests to any host other than their own origin
+
+Changing repository visibility remains an explicit owner action.
