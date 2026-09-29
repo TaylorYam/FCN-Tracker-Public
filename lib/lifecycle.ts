@@ -158,10 +158,3 @@ export function deriveLifecycle(
     settlement: null,
   };
 }
-
-export const STATUS_LABEL: Record<LifecycleStatus, string> = {
-  "non-call": "Non-call period",
-  "ko-observation": "Active · KO observation",
-  "knocked-out": "Knocked out · early redemption",
-  matured: "Matured",
-};

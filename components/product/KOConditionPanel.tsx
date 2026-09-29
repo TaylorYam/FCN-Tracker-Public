@@ -1,17 +1,16 @@
 import { InfoTip } from "@/components/InfoTip";
 import { Card, Section } from "@/components/Section";
 import { formatDate, formatDateShort } from "@/lib/dates";
-import {
-  getObservationDates,
-  getScheduledMonthlyObservationDates,
-  observationModeLabel,
-} from "@/lib/fcn";
+import { getObservationDates, getScheduledMonthlyObservationDates } from "@/lib/fcn";
 import { formatLevel } from "@/lib/format";
-import { GLOSSARY } from "@/lib/glossary";
+import type { Locale } from "@/lib/i18n/config";
+import { getMessages, type Messages } from "@/lib/i18n/messages";
 import { evaluateKORuleMatrix } from "@/lib/rules";
 import type { ProductState } from "@/lib/state";
 
-export function KOConditionPanel({ state }: { state: ProductState }) {
+export function KOConditionPanel({ state, locale }: { state: ProductState; locale: Locale }) {
+  const m = getMessages(locale);
+  const t = m.product.ko;
   const { config: p, series, ko, asOf } = state;
   const evaluated = getObservationDates(p, series).filter(
     (d) => !ko.trigger.triggerDate || d <= ko.trigger.triggerDate,
@@ -22,38 +21,38 @@ export function KOConditionPanel({ state }: { state: ProductState }) {
     <Section
       title={
         <>
-          KO condition
-          <InfoTip label="memory KO">{GLOSSARY.memory}</InfoTip>
+          {t.title}
+          <InfoTip ariaLabel={m.aboutTerm(m.terms.memory)}>{m.glossary.memory}</InfoTip>
         </>
       }
-      aside={observationModeLabel(p)}
+      aside={m.observationMode(p.koObservationFreq, p.hasMemoryKO)}
     >
       <Card className="px-4 py-3">
         <dl className="grid grid-cols-2 gap-x-4 gap-y-2 text-[12px] sm:grid-cols-4">
-          <Fact label="KO level" value={`${formatLevel(p.koLevel)} of initial`} />
+          <Fact label={t.level} value={t.levelValue(formatLevel(p.koLevel))} />
           <Fact
             label={
               <>
-                KO start
-                <InfoTip label="non-call period">{GLOSSARY.nonCall}</InfoTip>
+                {t.start}
+                <InfoTip ariaLabel={m.aboutTerm(m.terms.nonCall)}>{m.glossary.nonCall}</InfoTip>
               </>
             }
-            value={formatDate(p.koStartDate)}
+            value={formatDate(p.koStartDate, locale)}
           />
           <Fact
             label={
               <>
-                Observation
-                <InfoTip label="observation frequency">{GLOSSARY.observation}</InfoTip>
+                {t.observation}
+                <InfoTip ariaLabel={m.aboutTerm(m.terms.observation)}>{m.glossary.observation}</InfoTip>
               </>
             }
-            value={p.koObservationFreq === "daily" ? "Every close" : "Monthly obs. date"}
+            value={p.koObservationFreq === "daily" ? t.everyClose : t.monthlyDate}
           />
-          <Fact label="Dates evaluated" value={`${evaluated.length}`} />
+          <Fact label={t.evaluated} value={`${evaluated.length}`} />
         </dl>
 
         {p.koObservationFreq === "monthly" ? (
-          <MonthlyObservationTable state={state} />
+          <MonthlyObservationTable state={state} locale={locale} m={m} />
         ) : (
           <ul className="mt-3 divide-y divide-bg-elevated border-t border-bg-elevated">
             {p.underlyings.map((u) => {
@@ -66,9 +65,11 @@ export function KOConditionPanel({ state }: { state: ProductState }) {
                   </span>
                   <span className={r?.reached ? "font-semibold text-red-700" : "text-text-muted"}>
                     {r?.reached && r.reachedDate
-                      ? `${p.hasMemoryKO ? "Recorded" : "Above KO"} ${formatDate(r.reachedDate)}`
+                      ? p.hasMemoryKO
+                        ? t.recorded(formatDate(r.reachedDate, locale))
+                        : t.aboveKO(formatDate(r.reachedDate, locale))
                       : p.hasMemoryKO
-                        ? "Not yet recorded"
+                        ? t.notRecorded
                         : "—"}
                   </span>
                 </li>
@@ -80,43 +81,41 @@ export function KOConditionPanel({ state }: { state: ProductState }) {
         <p className="mt-3 text-[12px] leading-relaxed text-text-secondary">
           {ko.trigger.triggered && ko.trigger.triggerDate
             ? p.hasMemoryKO
-              ? `All underlyings recorded — KO triggered on ${formatDate(ko.trigger.triggerDate)}, the date the last laggard crossed.`
-              : `All underlyings were at or above KO on ${formatDate(ko.trigger.triggerDate)} — KO triggered.`
-            : `No KO as of ${formatDate(asOf < p.expiryDate ? asOf : p.expiryDate)}.`}
+              ? t.triggeredMemory(formatDate(ko.trigger.triggerDate, locale))
+              : t.triggeredNonMemory(formatDate(ko.trigger.triggerDate, locale))
+            : t.noKO(formatDate(asOf < p.expiryDate ? asOf : p.expiryDate, locale))}
         </p>
       </Card>
 
       <div className="mt-3">
-        <div className="mb-1.5 text-[11px] font-medium text-text-muted">
-          Rule comparison — the same synthetic path under each KO rule
-        </div>
+        <div className="mb-1.5 text-[11px] font-medium text-text-muted">{t.matrixTitle}</div>
         <Card className="overflow-hidden">
           <table className="w-full text-[12px]">
             <tbody>
-              {matrix.map((m) => (
+              {matrix.map((row) => (
                 <tr
-                  key={m.label}
+                  key={row.label}
                   className={`border-t border-bg-elevated first:border-t-0 ${
-                    m.isProductRule ? "bg-accent-blue/10" : ""
+                    row.isProductRule ? "bg-accent-blue/10" : ""
                   }`}
                 >
                   <td className="px-3 py-2 font-medium text-text-primary">
-                    {m.label}
-                    {m.isProductRule && (
+                    {m.observationMode(row.koObservationFreq, row.hasMemoryKO)}
+                    {row.isProductRule && (
                       <span className="ml-1.5 rounded bg-accent-blue px-1 py-0.5 text-[9px] font-bold uppercase tracking-wide text-white">
-                        This product
+                        {m.common.thisProduct}
                       </span>
                     )}
                   </td>
                   <td className="px-3 py-2 text-right tabular-nums">
-                    {m.trigger.triggered && m.trigger.triggerDate ? (
+                    {row.trigger.triggered && row.trigger.triggerDate ? (
                       <span className="font-semibold text-emerald-700">
-                        KO {formatDate(m.trigger.triggerDate)}
+                        {t.matrixKO(formatDate(row.trigger.triggerDate, locale))}
                       </span>
                     ) : (
                       <span className="text-text-muted">
-                        No KO
-                        {m.hasMemoryKO && ` · ${m.reachedCount}/${p.underlyings.length} recorded`}
+                        {t.matrixNoKO}
+                        {row.hasMemoryKO && t.matrixRecorded(row.reachedCount, p.underlyings.length)}
                       </span>
                     )}
                   </td>
@@ -125,10 +124,7 @@ export function KOConditionPanel({ state }: { state: ProductState }) {
             </tbody>
           </table>
         </Card>
-        <p className="mt-1.5 text-[11px] leading-relaxed text-text-muted">
-          Educational comparison using the engine in <code>lib/fcn.ts</code>. Only the highlighted
-          rule is part of this product&apos;s terms.
-        </p>
+        <p className="mt-1.5 text-[11px] leading-relaxed text-text-muted">{t.matrixNote}</p>
       </div>
     </Section>
   );
@@ -143,7 +139,16 @@ function Fact({ label, value }: { label: React.ReactNode; value: string }) {
   );
 }
 
-function MonthlyObservationTable({ state }: { state: ProductState }) {
+function MonthlyObservationTable({
+  state,
+  locale,
+  m,
+}: {
+  state: ProductState;
+  locale: Locale;
+  m: Messages;
+}) {
+  const t = m.product.ko;
   const { config: p, series, ko } = state;
   const scheduled = getScheduledMonthlyObservationDates(p);
   const lastData = Object.keys(series).sort().at(-1) ?? "";
@@ -157,27 +162,27 @@ function MonthlyObservationTable({ state }: { state: ProductState }) {
       <table className="w-full min-w-[420px] text-[12px] tabular-nums">
         <thead>
           <tr className="text-[10px] uppercase tracking-wide text-text-muted">
-            <th className="py-2 pr-2 text-left font-medium">Obs. date</th>
+            <th className="py-2 pr-2 text-left font-medium">{t.obsDate}</th>
             {p.underlyings.map((u) => (
               <th key={u.ticker} className="px-1 py-2 text-right font-medium">
                 {u.ticker}
               </th>
             ))}
-            <th className="py-2 pl-2 text-right font-medium">All ≥ KO?</th>
+            <th className="py-2 pl-2 text-right font-medium">{t.allAbove}</th>
           </tr>
         </thead>
         <tbody>
           {past.map((d) => {
             const day = series[d];
-            const flags = p.underlyings.map((u) => {
+            const levels = p.underlyings.map((u) => {
               const close = day?.[u.ticker];
               return close === undefined ? null : close / u.initialPrice;
             });
-            const allUp = flags.every((f) => f !== null && f >= p.koLevel);
+            const allUp = levels.every((f) => f !== null && f >= p.koLevel);
             return (
               <tr key={d} className="border-t border-bg-elevated">
-                <td className="py-1.5 pr-2 text-text-secondary">{formatDateShort(d)}</td>
-                {flags.map((f, i) => (
+                <td className="py-1.5 pr-2 text-text-secondary">{formatDateShort(d, locale)}</td>
+                {levels.map((f, i) => (
                   <td
                     key={p.underlyings[i].ticker}
                     className={`px-1 py-1.5 text-right ${
@@ -188,16 +193,17 @@ function MonthlyObservationTable({ state }: { state: ProductState }) {
                   </td>
                 ))}
                 <td className={`py-1.5 pl-2 text-right font-semibold ${allUp ? "text-emerald-700" : "text-text-muted"}`}>
-                  {allUp ? "Yes → KO" : "No"}
+                  {allUp ? t.yesKO : t.no}
                 </td>
               </tr>
             );
           })}
           {shownUpcoming.map((d) => (
             <tr key={d} className="border-t border-bg-elevated">
-              <td className="py-1.5 pr-2 text-text-secondary">{formatDateShort(d)}</td>
+              <td className="py-1.5 pr-2 text-text-secondary">{formatDateShort(d, locale)}</td>
               <td colSpan={p.underlyings.length + 1} className="py-1.5 text-right text-text-muted">
-                Next observation{hidden > 0 ? ` · ${hidden} more scheduled` : ""}
+                {t.nextObservation}
+                {hidden > 0 ? t.moreScheduled(hidden) : ""}
               </td>
             </tr>
           ))}

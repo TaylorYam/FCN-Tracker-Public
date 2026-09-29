@@ -90,11 +90,3 @@ export function deriveCouponSchedule(
     nextPayment,
   };
 }
-
-export const COUPON_STATUS_LABEL: Record<CouponStatus, string> = {
-  paid: "Paid",
-  scheduled: "Scheduled",
-  "paid-with-redemption": "Paid with early redemption",
-  "payable-with-redemption": "Payable with early redemption",
-  cancelled: "Cancelled — redeemed early",
-};

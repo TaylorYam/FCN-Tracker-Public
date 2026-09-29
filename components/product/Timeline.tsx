@@ -1,14 +1,17 @@
 import { InfoTip } from "@/components/InfoTip";
 import { Card, Section } from "@/components/Section";
 import { formatDate, formatDateShort } from "@/lib/dates";
-import { GLOSSARY } from "@/lib/glossary";
+import type { Locale } from "@/lib/i18n/config";
+import { getMessages } from "@/lib/i18n/messages";
 import { daysBetween } from "@/lib/schedule";
 import type { ProductState } from "@/lib/state";
 
 type Marker = { date: string; label: string; tone: "muted" | "ko" | "ki" | "end" };
 
 /** Horizontal lifecycle timeline: trade → KO start → (events) → final valuation. */
-export function Timeline({ state }: { state: ProductState }) {
+export function Timeline({ state, locale }: { state: ProductState; locale: Locale }) {
+  const m = getMessages(locale);
+  const t = m.product.timeline;
   const { config: p, lifecycle, ko, asOf } = state;
   const total = daysBetween(p.tradeDate, p.expiryDate);
   const pos = (d: string) => Math.min(100, Math.max(0, (daysBetween(p.tradeDate, d) / total) * 100));
@@ -21,25 +24,33 @@ export function Timeline({ state }: { state: ProductState }) {
         : p.expiryDate;
 
   const markers: Marker[] = [
-    { date: p.tradeDate, label: "Trade", tone: "muted" },
-    { date: p.koStartDate, label: "KO start", tone: "muted" },
+    { date: p.tradeDate, label: t.trade, tone: "muted" },
+    { date: p.koStartDate, label: t.koStart, tone: "muted" },
   ];
   if (lifecycle.kiEvent.kind === "occurred" && p.kiObservation === "AKI") {
-    markers.push({ date: lifecycle.kiEvent.date, label: "KI event", tone: "ki" });
+    markers.push({ date: lifecycle.kiEvent.date, label: t.kiEvent, tone: "ki" });
   }
   if (lifecycle.status === "knocked-out" && ko.trigger.triggerDate) {
-    markers.push({ date: ko.trigger.triggerDate, label: "Knock-out", tone: "ko" });
+    markers.push({ date: ko.trigger.triggerDate, label: t.knockOut, tone: "ko" });
   }
-  markers.push({ date: p.expiryDate, label: "Final valuation", tone: "end" });
+  markers.push({ date: p.expiryDate, label: t.finalValuation, tone: "end" });
 
-  const daysLeft = daysBetween(asOf, p.expiryDate);
+  const summary =
+    lifecycle.status === "knocked-out" && ko.trigger.triggerDate
+      ? t.redeemedEarly(
+          formatDate(ko.trigger.triggerDate, locale),
+          daysBetween(ko.trigger.triggerDate, p.expiryDate),
+        )
+      : lifecycle.status === "matured"
+        ? t.matured(formatDate(p.expiryDate, locale))
+        : t.remaining(daysBetween(asOf, p.expiryDate), formatDate(p.expiryDate, locale));
 
   return (
     <Section
       title={
         <>
-          Maturity timeline
-          <InfoTip label="maturity">{GLOSSARY.maturity}</InfoTip>
+          {t.title}
+          <InfoTip ariaLabel={m.aboutTerm(m.terms.maturity)}>{m.glossary.maturity}</InfoTip>
         </>
       }
     >
@@ -58,19 +69,19 @@ export function Timeline({ state }: { state: ProductState }) {
             style={{ left: 0, width: `${pos(p.koStartDate)}%` }}
             aria-hidden
           />
-          {markers.map((m, i) => (
+          {markers.map((mk, i) => (
             <div
-              key={`${m.label}-${i}`}
+              key={`${mk.tone}-${mk.date}-${i}`}
               className="absolute top-0 -translate-x-1/2 text-center"
-              style={{ left: `${pos(m.date)}%` }}
+              style={{ left: `${pos(mk.date)}%` }}
             >
               <div
                 className={`mx-auto mt-[18px] h-4 w-0.5 ${
-                  m.tone === "ko"
+                  mk.tone === "ko"
                     ? "bg-emerald-700"
-                    : m.tone === "ki"
+                    : mk.tone === "ki"
                       ? "bg-accent-red"
-                      : m.tone === "end"
+                      : mk.tone === "end"
                         ? "bg-text-primary"
                         : "bg-text-muted"
                 }`}
@@ -78,24 +89,15 @@ export function Timeline({ state }: { state: ProductState }) {
               <div
                 className={`mt-1 whitespace-nowrap text-[10px] font-medium ${
                   i % 2 === 1 ? "translate-y-7" : ""
-                } ${m.tone === "ko" ? "text-emerald-800" : m.tone === "ki" ? "text-accent-red" : "text-text-muted"}`}
+                } ${mk.tone === "ko" ? "text-emerald-800" : mk.tone === "ki" ? "text-accent-red" : "text-text-muted"}`}
               >
-                {m.label}
-                <span className="block tabular-nums text-text-muted">{formatDateShort(m.date)}</span>
+                {mk.label}
+                <span className="block tabular-nums text-text-muted">{formatDateShort(mk.date, locale)}</span>
               </div>
             </div>
           ))}
         </div>
-        <p className="mt-9 text-[12px] leading-relaxed text-text-secondary">
-          {lifecycle.status === "knocked-out" && ko.trigger.triggerDate
-            ? `Redeemed early on ${formatDate(ko.trigger.triggerDate)}, ${daysBetween(
-                ko.trigger.triggerDate,
-                p.expiryDate,
-              )} days before the scheduled final valuation.`
-            : lifecycle.status === "matured"
-              ? `Reached final valuation on ${formatDate(p.expiryDate)} without a knock-out.`
-              : `${daysLeft} days to final valuation (${formatDate(p.expiryDate)}). Shaded segment = non-call period.`}
-        </p>
+        <p className="mt-9 text-[12px] leading-relaxed text-text-secondary">{summary}</p>
       </Card>
     </Section>
   );

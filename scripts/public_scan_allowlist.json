@@ -50,19 +50,25 @@
   {
     "path": "docs/screenshots/landing.png",
     "category": "binary-file",
-    "sha256": "bc4928806072f8dbd05d31490cc2917a7074e9b07e9d9f79f4124cbf02861bb1",
+    "sha256": "23c0195c142b214408a0870f5fc7cf3de51f0c746317420be83421c832815290",
     "reason": "Screenshot of the synthetic landing page; reviewed visually, shows demo content only."
   },
   {
     "path": "docs/screenshots/product-demo-fcn-001.png",
     "category": "binary-file",
-    "sha256": "df19505ff4c2a8e48ff84ea4b5dc277450f1c1b5ac260ff6ed7f463e69fbe6dc",
+    "sha256": "f2bc623d0343187762b783f707f9c9c366b2c36d0ef1e16fcc17e3ad811f391a",
     "reason": "Screenshot of synthetic product DEMO-FCN-001; reviewed visually, demo content only."
+  },
+  {
+    "path": "docs/screenshots/product-demo-fcn-002-zh-TW.png",
+    "category": "binary-file",
+    "sha256": "3c3ec1c1c2ece6267d56bd519bbfdd9ec22d6cebdbc68ec7ad2532a409c97b76",
+    "reason": "Screenshot of synthetic product DEMO-FCN-002 in Chinese; reviewed visually, demo content only."
   },
   {
     "path": "docs/screenshots/product-demo-fcn-003.png",
     "category": "binary-file",
-    "sha256": "d522df1573c7e973e59a6aaf2c673f97c2c54eff626619918ce5f34c1305732a",
+    "sha256": "df74ca069dedc4f0b0cfb5251cc02a094c884fe051b56aaba687dc4ed5d5828c",
     "reason": "Screenshot of synthetic product DEMO-FCN-003; reviewed visually, demo content only."
   },
   {

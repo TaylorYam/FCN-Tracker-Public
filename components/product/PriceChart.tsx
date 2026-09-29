@@ -16,6 +16,21 @@ import type { TooltipContentProps } from "recharts";
 import { buildChartData } from "@/lib/chart-data";
 import type { FCNProduct, PriceSeries } from "@/lib/types";
 
+/** Pre-translated, serializable chart text (built on the server). */
+export type ChartLabels = {
+  title: string;
+  synthetic: string;
+  ko: string;
+  strike: string;
+  ki: string;
+  nonCall: string;
+  kiEvent: string;
+  legendNonCall: string;
+  legendMonthly: string;
+  legendGrey: string;
+  aria: string;
+};
+
 type Props = {
   product: FCNProduct;
   series: PriceSeries;
@@ -29,6 +44,7 @@ type Props = {
   kiEventDate: string | null;
   /** Monthly KO observation dates to mark (empty for daily products). */
   observationDates: string[];
+  labels: ChartLabels;
 };
 
 const DAY = 86_400_000;
@@ -42,6 +58,7 @@ export function PriceChart({
   triggerDate,
   kiEventDate,
   observationDates,
+  labels,
 }: Props) {
   const allData = buildChartData(series, product.underlyings);
   const tradeT = new Date(product.tradeDate).getTime();
@@ -144,17 +161,13 @@ export function PriceChart({
     ),
   ).sort((a, b) => a - b);
 
-  const ariaLabel = `Synthetic price paths of ${product.underlyings
-    .map((u) => u.ticker)
-    .join(", ")} as a percentage of initial price, with KO at ${Math.round(koPct)}%, strike at ${Math.round(
-    strikePct,
-  )}%${hasKI ? ` and KI at ${Math.round(kiPct)}%` : ""}.`;
+  const ariaLabel = labels.aria;
 
   return (
     <section className="mb-6">
       <div className="mb-2 flex items-baseline justify-between gap-3">
-        <h2 className="text-sm font-semibold text-text-secondary">Price path · % of initial</h2>
-        <span className="text-[11px] text-text-muted">Synthetic closes</span>
+        <h2 className="text-sm font-semibold text-text-secondary">{labels.title}</h2>
+        <span className="text-[11px] text-text-muted">{labels.synthetic}</span>
       </div>
       <div className="rounded-lg bg-bg-surface px-1 pb-1 pt-3">
         <div className="h-[360px] w-full" role="img" aria-label={ariaLabel}>
@@ -191,14 +204,14 @@ export function PriceChart({
                 stroke="#136b66"
                 strokeDasharray="4 4"
                 strokeWidth={1}
-                label={{ value: "KO", position: "insideTopRight", fill: "#136b66", fontSize: 9 }}
+                label={{ value: labels.ko, position: "insideTopRight", fill: "#136b66", fontSize: 9 }}
               />
               <ReferenceLine
                 y={strikePct}
                 stroke="#8a5e0a"
                 strokeDasharray="4 4"
                 strokeWidth={1}
-                label={{ value: "Strike", position: "insideTopRight", fill: "#8a5e0a", fontSize: 9 }}
+                label={{ value: labels.strike, position: "insideTopRight", fill: "#8a5e0a", fontSize: 9 }}
               />
               {hasKI && (
                 <ReferenceLine
@@ -207,7 +220,7 @@ export function PriceChart({
                   strokeDasharray="4 4"
                   strokeWidth={1}
                   label={{
-                    value: `KI (${product.kiObservation})`,
+                    value: labels.ki,
                     position: "insideBottomRight",
                     fill: "#b14724",
                     fontSize: 9,
@@ -221,7 +234,7 @@ export function PriceChart({
                 strokeDasharray="3 3"
                 strokeWidth={1}
                 label={{
-                  value: "Non-call",
+                  value: labels.nonCall,
                   position: "insideTopLeft",
                   fill: "#6f6450",
                   fontSize: 9,
@@ -243,7 +256,7 @@ export function PriceChart({
                   stroke="#b14724"
                   strokeDasharray="2 3"
                   strokeWidth={1}
-                  label={{ value: "KI event", position: "insideBottomLeft", fill: "#b14724", fontSize: 9 }}
+                  label={{ value: labels.kiEvent, position: "insideBottomLeft", fill: "#b14724", fontSize: 9 }}
                 />
               )}
 
@@ -325,7 +338,7 @@ export function PriceChart({
           </ResponsiveContainer>
         </div>
       </div>
-      <Legend product={product} reachedKO={reachedKO} monthly={observationDates.length > 0} />
+      <Legend product={product} reachedKO={reachedKO} monthly={observationDates.length > 0} labels={labels} />
     </section>
   );
 }
@@ -334,10 +347,12 @@ function Legend({
   product,
   reachedKO,
   monthly,
+  labels,
 }: {
   product: FCNProduct;
   reachedKO: Record<string, boolean>;
   monthly: boolean;
+  labels: ChartLabels;
 }) {
   const anyKO = product.underlyings.some((u) => reachedKO[u.ticker] === true);
   return (
@@ -349,12 +364,12 @@ function Legend({
         </span>
       ))}
       <span className="ml-auto flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] text-text-muted">
-        <span>Shaded = non-call period</span>
-        {monthly && <span>Faint verticals = monthly KO observation dates</span>}
+        <span>{labels.legendNonCall}</span>
+        {monthly && <span>{labels.legendMonthly}</span>}
         {anyKO && (
           <span className="flex items-center gap-1 text-text-primary">
             <span className="inline-block h-2 w-2 rounded-full bg-[#c4b48f]" />
-            Grey = underlying has recorded KO
+            {labels.legendGrey}
           </span>
         )}
       </span>

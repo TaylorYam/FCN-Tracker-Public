@@ -29,7 +29,8 @@ flowchart TD
 | Coupons | `lib/coupons.ts` | Per-period coupon, paid / scheduled / cancelled-after-KO status. |
 | Performance | `lib/performance.ts`, `lib/ki-risk.ts` | Performance vs initial, distance to barriers, worst performer, KI proximity. |
 | Rule comparison | `lib/rules.ts` | Re-evaluates the same path under alternative KO rules / KI styles (educational). |
-| UI | `app/`, `components/` | Server components render the state; only the chart is hydrated in the browser. |
+| UI | `app/[locale]/`, `components/` | Server components render the state; only the chart and the language switcher are hydrated in the browser. |
+| Localization | `lib/i18n/` | Locale config, path helpers and a typed EN / 繁中 dictionary; every locale must match the English shape at compile time. |
 
 ## Design choices
 
@@ -41,6 +42,10 @@ flowchart TD
 - **Static output.** All pages are pre-rendered (`generateStaticParams`,
   `dynamicParams = false`); no runtime server state, credentials or network
   access are needed.
+- **Localized, still static.** Each language is its own pre-rendered route
+  (`/en/…`, `/zh-TW/…`) with the matching `<html lang>`. `/` redirects by
+  remembered choice (cookie), then browser language, then English — a
+  configuration redirect, not server code.
 - **One boundary for data.** Market data enters only through
   `MarketDataSource`. The engine never knows whether closes are synthetic.
 

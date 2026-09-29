@@ -2,12 +2,15 @@ import { InfoTip } from "@/components/InfoTip";
 import { Card, Section } from "@/components/Section";
 import { formatDate, formatDateShort } from "@/lib/dates";
 import { formatLevel, formatPrice, formatSignedPct } from "@/lib/format";
-import { GLOSSARY } from "@/lib/glossary";
+import type { Locale } from "@/lib/i18n/config";
+import { getMessages } from "@/lib/i18n/messages";
 import { getWorstKIRisk } from "@/lib/ki-risk";
 import { computeUnderlyingPerformance, findWorstPerformer, worstBelowStrike } from "@/lib/performance";
 import type { ProductState } from "@/lib/state";
 
-export function UnderlyingTable({ state }: { state: ProductState }) {
+export function UnderlyingTable({ state, locale }: { state: ProductState; locale: Locale }) {
+  const m = getMessages(locale);
+  const t = m.product.underlyings;
   const { config: p, prices, ko, lifecycle } = state;
   const rows = computeUnderlyingPerformance(p, prices);
   const worst = findWorstPerformer(p, prices);
@@ -17,23 +20,19 @@ export function UnderlyingTable({ state }: { state: ProductState }) {
   const kiRisk = isLive ? getWorstKIRisk(p, prices) : null;
 
   const valuationLabel =
-    lifecycle.status === "knocked-out"
-      ? "At KO date"
-      : lifecycle.status === "matured"
-        ? "Final"
-        : "Latest";
+    lifecycle.status === "knocked-out" ? t.atKO : lifecycle.status === "matured" ? t.final : t.latest;
 
   return (
     <Section
       title={
         <>
-          Underlyings
-          <InfoTip label="performance">{GLOSSARY.performance}</InfoTip>
+          {t.title}
+          <InfoTip ariaLabel={m.aboutTerm(m.terms.performance)}>{m.glossary.performance}</InfoTip>
         </>
       }
       aside={
         lifecycle.valuationDate
-          ? `${valuationLabel} closes: ${formatDate(lifecycle.valuationDate)}`
+          ? t.closesOn(valuationLabel, formatDate(lifecycle.valuationDate, locale))
           : undefined
       }
     >
@@ -41,14 +40,14 @@ export function UnderlyingTable({ state }: { state: ProductState }) {
         <table className="w-full min-w-[640px] border-collapse text-sm">
           <thead>
             <tr className="text-left text-[10px] uppercase tracking-wide text-text-muted">
-              <th className="px-3 py-2 font-medium">Underlying</th>
-              <th className="px-3 py-2 text-right font-medium">Initial</th>
+              <th className="px-3 py-2 font-medium">{t.underlying}</th>
+              <th className="px-3 py-2 text-right font-medium">{t.initial}</th>
               <th className="px-3 py-2 text-right font-medium">{valuationLabel}</th>
-              <th className="px-3 py-2 text-right font-medium">Performance</th>
-              <th className="px-3 py-2 text-right font-medium">KO {formatLevel(p.koLevel)}</th>
-              <th className="px-3 py-2 text-right font-medium">Strike {formatLevel(p.strikeLevel)}</th>
+              <th className="px-3 py-2 text-right font-medium">{t.performance}</th>
+              <th className="px-3 py-2 text-right font-medium">{t.koCol(formatLevel(p.koLevel))}</th>
+              <th className="px-3 py-2 text-right font-medium">{t.strikeCol(formatLevel(p.strikeLevel))}</th>
               {hasKI && (
-                <th className="px-3 py-2 text-right font-medium">KI {formatLevel(p.kiLevel)}</th>
+                <th className="px-3 py-2 text-right font-medium">{t.kiCol(formatLevel(p.kiLevel))}</th>
               )}
             </tr>
           </thead>
@@ -73,7 +72,10 @@ export function UnderlyingTable({ state }: { state: ProductState }) {
                     <div className="mt-1 flex flex-wrap gap-1">
                       {reached?.reached && (
                         <span className="rounded bg-red-100 px-1.5 py-0.5 text-[10px] font-bold tracking-wide text-red-700">
-                          KO{p.hasMemoryKO && reached.reachedDate ? ` · ${formatDateShort(reached.reachedDate)}` : ""}
+                          KO
+                          {p.hasMemoryKO && reached.reachedDate
+                            ? ` · ${formatDateShort(reached.reachedDate, locale)}`
+                            : ""}
                         </span>
                       )}
                       {isWorst && (
@@ -84,7 +86,7 @@ export function UnderlyingTable({ state }: { state: ProductState }) {
                               : "bg-bg-elevated/60 text-text-secondary"
                           }`}
                         >
-                          {isWorstBelowK ? "Worst · below strike" : "Worst performer"}
+                          {isWorstBelowK ? t.worstBelowStrike : t.worst}
                         </span>
                       )}
                     </div>
@@ -106,15 +108,15 @@ export function UnderlyingTable({ state }: { state: ProductState }) {
                   <td className="px-3 py-3 text-right tabular-nums text-text-secondary">
                     {formatPrice(r.koPrice)}
                     <div className={`text-[11px] ${r.koDistancePp >= 0 ? "text-emerald-700" : "text-text-muted"}`}>
-                      {r.koDistancePp >= 0 ? "at/above" : `${Math.abs(r.koDistancePp).toFixed(1)} pp below`}
+                      {r.koDistancePp >= 0 ? t.atOrAbove : t.ppBelow(Math.abs(r.koDistancePp).toFixed(1))}
                     </div>
                   </td>
                   <td className="px-3 py-3 text-right tabular-nums text-text-secondary">
                     {formatPrice(r.strikePrice)}
                     <div className={`text-[11px] ${r.isBelowStrike ? "text-amber-800" : "text-text-muted"}`}>
                       {r.isBelowStrike
-                        ? `${Math.abs(r.strikeDistancePp).toFixed(1)} pp below`
-                        : `${r.strikeDistancePp.toFixed(1)} pp above`}
+                        ? t.ppBelow(Math.abs(r.strikeDistancePp).toFixed(1))
+                        : t.ppAbove(r.strikeDistancePp.toFixed(1))}
                     </div>
                   </td>
                   {hasKI && (
@@ -138,17 +140,18 @@ export function UnderlyingTable({ state }: { state: ProductState }) {
               <div
                 className={`text-[12px] font-bold ${kiRisk.isBelowKI ? "text-red-700" : "text-amber-900"}`}
               >
-                {kiRisk.ticker} is below strike ·{" "}
-                {kiRisk.isBelowKI
-                  ? `${Math.abs(kiRisk.distancePercentagePoints).toFixed(1)} pp below KI`
-                  : `${kiRisk.distancePercentagePoints.toFixed(1)} pp above KI`}
+                {t.kiRiskHead(
+                  kiRisk.ticker,
+                  Math.abs(kiRisk.distancePercentagePoints).toFixed(1),
+                  kiRisk.isBelowKI,
+                )}
               </div>
               <div className="mt-1 text-[11px] text-text-secondary">
                 {p.kiObservation === "EKI"
-                  ? "EKI: the barrier is evaluated on the final valuation date only; closes below KI before then do not count."
+                  ? t.kiRiskEki
                   : lifecycle.kiEvent.kind === "occurred"
-                    ? `AKI: barrier already breached on ${formatDate(lifecycle.kiEvent.date)}.`
-                    : "AKI: any daily close below KI during the tenor would activate the downside."}
+                    ? t.kiRiskAkiHit(formatDate(lifecycle.kiEvent.date, locale))
+                    : t.kiRiskAki}
               </div>
             </div>
             <div className="shrink-0 text-right tabular-nums">

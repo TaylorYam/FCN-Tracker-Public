@@ -30,6 +30,11 @@ credentials and no network access.
 - **Monitoring UX** — status banner, maturity timeline, underlying table with
   distance to each barrier, KO-condition breakdown, coupon schedule, and a
   multi-underlying price-path chart with barrier lines.
+- **Bilingual UI** — English and Traditional Chinese (繁體中文), switchable
+  from the top-right corner. Each language is a statically generated route
+  (`/en`, `/zh-TW`); a typed dictionary fails the type check if any
+  translation is missing, and `/` follows the visitor's last choice or
+  browser language.
 - **Engineering** — Next.js App Router, React, TypeScript, a pure and
   deterministic engine, 100+ unit and scenario tests, CI with a
   public-content safety scanner.
@@ -39,7 +44,8 @@ credentials and no network access.
 [Open the live FCN Tracker portfolio demo](https://fcn-tracker-portfolio.vercel.app)
 
 The demo uses fully synthetic product terms and price paths and requires no
-credentials or private infrastructure.
+credentials or private infrastructure. Use the language switcher in the top
+right to change between English and 繁體中文; the choice is remembered.
 
 To run it locally:
 
@@ -52,9 +58,9 @@ npm start          # http://localhost:3000
 Development server: `npm run dev`. Requirements: Node.js 20.9+ (CI uses the
 current LTS, Node 24). No environment variables are needed.
 
-| Landing page | Matured product with physical delivery (DEMO-FCN-003) |
-|---|---|
-| ![Landing page](docs/screenshots/landing.png) | ![DEMO-FCN-003](docs/screenshots/product-demo-fcn-003.png) |
+| Landing page | Matured product with physical delivery (DEMO-FCN-003) | 繁體中文 (DEMO-FCN-002) |
+|---|---|---|
+| ![Landing page](docs/screenshots/landing.png) | ![DEMO-FCN-003](docs/screenshots/product-demo-fcn-003.png) | ![DEMO-FCN-002 in Traditional Chinese](docs/screenshots/product-demo-fcn-002-zh-TW.png) |
 
 ## Structured Product Concepts
 
@@ -98,7 +104,7 @@ flowchart TD
 ```
 
 ```
-app/                    Next.js routes (landing, /products/[productId])
+app/[locale]/           Next.js routes per language (/en, /zh-TW, …/products/[productId])
 components/             UI; product/PriceChart.tsx is the only browser-hydrated component
 lib/fcn.ts              KO engine: observation dates, memory / non-memory
 lib/ki.ts               knock-in events (EKI / AKI)
@@ -109,6 +115,7 @@ lib/schedule.ts         business-day and coupon-schedule helpers
 lib/state.ts            assembles the ProductState
 lib/market-data.ts      MarketDataSource boundary
 lib/demo/               synthetic products, scenario anchors, seeded generator
+lib/i18n/               locale config and typed EN / 繁中 dictionary
 __tests__/              node:test suites
 scripts/check_public.py public-content safety scanner
 ```
@@ -136,12 +143,13 @@ synthetic source: [docs/architecture.md](docs/architecture.md).
 3. `assembleProductSeries` combines per-ticker closes into one series per
    product; `buildProductState` clips it to the valuation date and runs the
    KO, KI, lifecycle, coupon and performance evaluators.
-4. Pages are rendered at build time from the resulting `ProductState`.
+4. Pages are rendered at build time from the resulting `ProductState`, once
+   per language.
 
 ## Testing
 
 ```bash
-npm test            # node:test suites (115 tests)
+npm test            # node:test suites (125 tests)
 npm run typecheck   # tsc --noEmit
 npm run build       # production build
 python scripts/check_public.py   # public-content scan

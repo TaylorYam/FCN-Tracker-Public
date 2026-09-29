@@ -3,8 +3,10 @@ import { notFound } from "next/navigation";
 import { Footer } from "@/components/Footer";
 import { ProductView } from "@/components/product/ProductView";
 import { getDemoProduct, getDemoProductState, listDemoProducts } from "@/lib/demo";
+import { isLocale } from "@/lib/i18n/config";
+import { getMessages } from "@/lib/i18n/messages";
 
-// Fully static: every demo product page is pre-rendered at build time.
+// Fully static: every demo product page is pre-rendered for every locale.
 export const dynamicParams = false;
 
 export function generateStaticParams() {
@@ -14,28 +16,31 @@ export function generateStaticParams() {
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ productId: string }>;
+  params: Promise<{ locale: string; productId: string }>;
 }): Promise<Metadata> {
-  const { productId } = await params;
+  const { locale, productId } = await params;
+  if (!isLocale(locale)) return {};
+  const m = getMessages(locale);
   const product = getDemoProduct(productId);
   return {
-    title: product ? `${product.code} (synthetic demo)` : "Product not found",
-    description: product?.scenario,
+    title: product ? m.meta.productTitle(product.code) : m.meta.notFound,
+    description: product ? (m.scenarios[product.id] ?? product.scenario) : undefined,
   };
 }
 
 export default async function ProductPage({
   params,
 }: {
-  params: Promise<{ productId: string }>;
+  params: Promise<{ locale: string; productId: string }>;
 }) {
-  const { productId } = await params;
+  const { locale, productId } = await params;
+  if (!isLocale(locale)) notFound();
   const state = getDemoProductState(productId);
   if (!state) notFound();
   return (
     <main className="mx-auto w-full max-w-5xl px-4 pb-10 pt-5">
-      <ProductView state={state} />
-      <Footer />
+      <ProductView state={state} locale={locale} />
+      <Footer locale={locale} />
     </main>
   );
 }
