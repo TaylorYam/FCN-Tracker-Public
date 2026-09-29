@@ -15,6 +15,15 @@ Scope: the `FCN-Tracker-Public` portfolio repository. Review date: 2026-09-28.
 | 9 | **Tests and CI validate the portfolio edition**: scanner, type check, unit/scenario tests and production build run on every push and pull request. | `.github/workflows/ci.yml`. |
 | 10 | The **original private repository remains separate** and private; nothing was pushed to it and its visibility was not changed. | Verified with the repository host before publication. |
 
+## Hosted demo
+
+- The public portfolio edition is deployed as a separate Vercel project dedicated to this repository.
+- The deployment uses no environment variables; none are configured on the project.
+- No storage, database, scheduled job or other operational infrastructure is connected.
+- The production deployment of the private project is separate and was not modified.
+- The hosted demo serves only the three synthetic products. Every page is pre-rendered static
+  HTML and the pages request resources from their own origin only.
+
 ## Scanner notes
 
 - `scripts/check_public.py` prints paths and categories only — never values —

@@ -13,9 +13,39 @@
   },
   {
     "path": "PUBLIC_READINESS_AUDIT.md",
+    "category": "hosting-platform-reference",
+    "sha256": "d560b1d3e946fdf32371aae91f8d7407b9e5f343d88f510cf0a6dde8b2a538fb",
+    "reason": "Readiness note that the demo runs as its own separate hosted project; no identifiers."
+  },
+  {
+    "path": "PUBLIC_READINESS_AUDIT.md",
     "category": "registry-code-term",
     "sha256": "9c3d094e03f4775a105fd1f091ea26c29073509c01c95e50ee64876dc3da9ee9",
     "reason": "Required readiness statement that real registry records were removed; names the registry only."
+  },
+  {
+    "path": "README.md",
+    "category": "deployment-url",
+    "sha256": "82e7edee68fb807a6beb14d4944902e093deb5998bf52d3d440684fa3b3727d4",
+    "reason": "Live-demo link to this repository's own synthetic portfolio deployment; reviewed, not production."
+  },
+  {
+    "path": "README.md",
+    "category": "hosting-platform-reference",
+    "sha256": "82e7edee68fb807a6beb14d4944902e093deb5998bf52d3d440684fa3b3727d4",
+    "reason": "Live-demo link to this repository's own synthetic portfolio deployment; reviewed, not production."
+  },
+  {
+    "path": "docs/linkedin.md",
+    "category": "deployment-url",
+    "sha256": "69725cde75a522ea225d26bb2dd4d40c7fcecfb5f71fb0096e735744a94b0d98",
+    "reason": "Live-demo link for the profile copy; points to the synthetic portfolio deployment only."
+  },
+  {
+    "path": "docs/linkedin.md",
+    "category": "hosting-platform-reference",
+    "sha256": "69725cde75a522ea225d26bb2dd4d40c7fcecfb5f71fb0096e735744a94b0d98",
+    "reason": "Live-demo link for the profile copy; points to the synthetic portfolio deployment only."
   },
   {
     "path": "docs/screenshots/landing.png",

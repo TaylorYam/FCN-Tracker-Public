@@ -24,6 +24,12 @@ preserving the core financial logic and application architecture.
 Interactive FCN monitoring demo combining structured-product logic,
 multi-underlying visualization, and full-stack product development.
 
+Live demo:
+https://fcn-tracker-portfolio.vercel.app
+
+Source code:
+https://github.com/TaylorYam/FCN-Tracker-Public
+
 ## Suggested skills
 
 - Structured Products

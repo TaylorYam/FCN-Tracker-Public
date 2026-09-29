@@ -36,7 +36,12 @@ credentials and no network access.
 
 ## Live Demo
 
-A hosted demo link will be added here once deployed. To run it locally:
+[Open the live FCN Tracker portfolio demo](https://fcn-tracker-portfolio.vercel.app)
+
+The demo uses fully synthetic product terms and price paths and requires no
+credentials or private infrastructure.
+
+To run it locally:
 
 ```bash
 npm ci
