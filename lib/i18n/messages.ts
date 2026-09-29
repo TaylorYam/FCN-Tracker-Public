@@ -402,7 +402,7 @@ const zhTW: Messages = {
       "FCN 通常採「最差表現」（worst-of）機制：到期結果由相對期初價表現最差的標的決定。",
     performance: "最新收盤價 ÷ 期初價 − 1，自期初觀察日起算。",
     maturity:
-      "最終評價日。若未敲出，商品依表現最差標的的最終水準、執行價與 KI 條件，以 100% 本金贖回或以實物交割結算。",
+      "最終評價日。若未敲出，商品依表現最差標的的最終水準、執行價與 KI 條件，以 100% 本金贖回，或以執行價承接表現最差標的的股票。",
   },
   terms: {
     coupon: "票息",
@@ -545,7 +545,7 @@ const zhTW: Messages = {
     "demo-fcn-002":
       "每月非記憶式 KO，搭配歐式敲入（EKI）：四檔必須在同一個每月觀察日同時達到或高於 KO。目前表現最差的標的已低於執行價，但仍高於 KI。",
     "demo-fcn-003":
-      "每日記憶式 KO，搭配美式敲入（AKI）：兩檔標的已記錄 KO，落後標的在存續期間跌破 KI、到期時仍低於執行價，因此到期以實物交割結算。",
+      "每日記憶式 KO，搭配美式敲入（AKI）：兩檔標的已記錄 KO，落後標的在存續期間跌破 KI、到期時仍低於執行價，因此到期以執行價承接股票。",
   },
   product: {
     back: "所有示範商品",
@@ -562,7 +562,7 @@ const zhTW: Messages = {
       knockedOut: (date: string, period: string) =>
         `${date} 滿足 KO 條件。商品以 100% 本金加上第 ${period} 期票息提前出場，其餘票息取消。`,
       delivery: (date: string, ticker: string, level: string, strike: string, kiBreached: boolean, price: string) =>
-        `最終評價日 ${date}：表現最差標的 ${ticker} 收在期初價的 ${level}，低於 ${strike} 執行價${kiBreached ? "，且已發生敲入" : ""}。以執行價（${price}）實物交割 ${ticker}。`,
+        `最終評價日 ${date}：表現最差標的 ${ticker} 收在期初價的 ${level}，低於 ${strike} 執行價${kiBreached ? "，且已發生敲入" : ""}。以執行價（${price}）承接 ${ticker} 股票。`,
       par: (date: string, ticker: string, level: string) =>
         `最終評價日 ${date}：以 100% 本金贖回。表現最差標的 ${ticker} 收在期初價的 ${level}。`,
       awaiting: "等待最終評價日收盤價。",
@@ -683,7 +683,7 @@ const zhTW: Messages = {
         `票息：${n} × ${per}% = 本金的 ${total}%${earlyDate ? `，最後一期於 ${earlyDate} 隨提前出場一併支付。` : "，不論結算方式皆照付。"}`,
       kiMatrixTitle: (level: string) => `敲入類型的影響——相同最終收盤價，KI 水準 ${level}`,
       noKI: "無 KI",
-      delivery: "以執行價實物交割",
+      delivery: "以執行價承接股票",
       par: "100% 本金贖回",
       kiMatrixNote:
         "教學比較。EKI 只以最終收盤價判斷 KI；AKI 觀察存續期間每個交易日的收盤價；無 KI 則僅由執行價決定。",
@@ -692,7 +692,7 @@ const zhTW: Messages = {
       parLead: "以 100% 本金贖回",
       parText: (ticker: string, level: string) =>
         `（最終評價日）。表現最差標的 ${ticker} 收在期初價的 ${level}。`,
-      deliveryLead: (ticker: string) => `實物交割 ${ticker}`,
+      deliveryLead: (ticker: string) => `承接 ${ticker} 股票`,
       deliveryText: (price: string, strike: string) =>
         `，以執行價 ${price}（期初價的 ${strike}）計算：本金將轉換為「本金 ÷ ${price}」股。`,
       deliveryValue: (ticker: string, level: string, value: string, strike: string) =>

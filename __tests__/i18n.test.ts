@@ -83,6 +83,15 @@ describe("dictionary", () => {
     }
   });
 
+  it("describes physical settlement as 承接股票 in Chinese", () => {
+    assert.match(zh.product.settlement.delivery, /承接股票/);
+    assert.match(zh.product.settlement.deliveryLead("THETA"), /承接 THETA 股票/);
+    const texts = Object.values(leaves(zh)).map((v) =>
+      typeof v === "function" ? String((v as (...a: unknown[]) => unknown)("X", "X", "X", "X", true, "X")) : String(v),
+    );
+    for (const t of texts) assert.doesNotMatch(t, /實物交割/);
+  });
+
   it("keeps the synthetic-demo label visible in both languages", () => {
     assert.match(en.badge.text, /synthetic demo/i);
     assert.match(zh.badge.text, /synthetic demo/i);
