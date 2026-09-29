@@ -21,6 +21,8 @@ Scope: the `FCN-Tracker-Public` portfolio repository. Review date: 2026-09-28.
 - The deployment uses no environment variables; none are configured on the project.
 - No storage, database, scheduled job or other operational infrastructure is connected.
 - The production deployment of the private project is separate and was not modified.
+- Production builds run automatically from `main` of this repository through the Git
+  integration (install with `npm ci`, then `npm run build`).
 - The hosted demo serves only the three synthetic products. Every page is pre-rendered static
   HTML and the pages request resources from their own origin only.
 
