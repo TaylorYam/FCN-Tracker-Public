@@ -92,6 +92,14 @@ describe("dictionary", () => {
     for (const t of texts) assert.doesNotMatch(t, /實物交割/);
   });
 
+  it("calls the non-call period 配息保證期 in Chinese", () => {
+    assert.equal(zh.status["non-call"], "配息保證期");
+    assert.equal(zh.product.chart.nonCall, "配息保證期");
+    for (const v of Object.values(leaves(zh))) {
+      if (typeof v === "string") assert.doesNotMatch(v, /保障期/);
+    }
+  });
+
   it("keeps the synthetic-demo label visible in both languages", () => {
     assert.match(en.badge.text, /synthetic demo/i);
     assert.match(zh.badge.text, /synthetic demo/i);

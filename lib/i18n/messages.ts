@@ -391,7 +391,7 @@ const zhTW: Messages = {
     observation:
       "每個配息期都有對應的觀察區間。每日 KO 商品自 KO 起始日起觀察每個收盤價；每月 KO 商品只在各期的觀察結束日觀察。",
     nonCall:
-      "KO 起始日之前不觀察敲出條件，商品不會提前出場；這段期間的收盤價即使高於 KO 水準也不列入計算。",
+      "KO 起始日之前不觀察敲出條件，商品不會提前出場，因此至少可領到這段期間的票息；這段期間的收盤價即使高於 KO 水準也不列入計算。",
     ko: "敲出（KO）門檻，以各連結標的期初價的百分比表示。當某個觀察日滿足 KO 條件，商品即以 100% 本金加上該期票息提前出場。",
     strike:
       "到期時，若表現最差標的的收盤價低於執行價（設有 KI 的商品須已發生敲入），投資人將以執行價承接該標的股票，而不是取回 100% 現金。",
@@ -407,7 +407,7 @@ const zhTW: Messages = {
   terms: {
     coupon: "票息",
     observation: "觀察頻率",
-    nonCall: "保障期",
+    nonCall: "配息保證期",
     ko: "敲出",
     strike: "執行價",
     ki: "敲入",
@@ -420,7 +420,7 @@ const zhTW: Messages = {
   observationMode: (freq: KOObservationFreq, memory: boolean) =>
     `${freq === "daily" ? "每日" : "每月"} · ${memory ? "記憶式" : "非記憶式"}`,
   status: {
-    "non-call": "保障期",
+    "non-call": "配息保證期",
     "ko-observation": "存續中 · KO 觀察",
     "knocked-out": "已敲出 · 提前出場",
     matured: "已到期",
@@ -473,11 +473,11 @@ const zhTW: Messages = {
       },
       {
         step: "評估觀察日",
-        text: "引擎依規則選出觀察日（每個收盤價，或僅每月觀察日），套用保障期，並計算記憶式或同日 KO。",
+        text: "引擎依規則選出觀察日（每個收盤價，或僅每月觀察日），套用配息保證期，並計算記憶式或同日 KO。",
       },
       {
         step: "推導商品狀態",
-        text: "狀態（保障期、存續中、已敲出、已到期）、配息狀態、表現最差標的、與各門檻的距離、KI 事件及到期結算。",
+        text: "狀態（配息保證期、存續中、已敲出、已到期）、配息狀態、表現最差標的、與各門檻的距離、KI 事件及到期結算。",
       },
       {
         step: "呈現",
@@ -511,7 +511,7 @@ const zhTW: Messages = {
       },
       {
         lead: "在觀察日判斷 KO。",
-        text: "第一期（保障期）不觀察敲出條件；之後依每日（每個收盤價）或每月（各期觀察結束日）判斷。一旦滿足條件，商品以 100% 本金加上當期票息提前出場。",
+        text: "第一期（配息保證期）不觀察敲出條件；之後依每日（每個收盤價）或每月（各期觀察結束日）判斷。一旦滿足條件，商品以 100% 本金加上當期票息提前出場。",
       },
       {
         lead: "記憶式 KO。",
@@ -597,7 +597,7 @@ const zhTW: Messages = {
         `${date} 提前出場，比預定的最終評價日早 ${days} 天。`,
       matured: (date: string) => `${date} 到達最終評價日，期間未曾敲出。`,
       remaining: (days: number, date: string) =>
-        `距最終評價日（${date}）還有 ${days} 天。陰影區段為保障期。`,
+        `距最終評價日（${date}）還有 ${days} 天。陰影區段為配息保證期。`,
     },
     chart: {
       title: "價格走勢 · 期初價百分比",
@@ -605,9 +605,9 @@ const zhTW: Messages = {
       ko: "KO",
       strike: "執行價",
       ki: (style: string) => `KI（${style}）`,
-      nonCall: "保障期",
+      nonCall: "配息保證期",
       kiEvent: "敲入事件",
-      legendNonCall: "陰影 = 保障期",
+      legendNonCall: "陰影 = 配息保證期",
       legendMonthly: "淡色直線 = 每月 KO 觀察日",
       legendGrey: "灰色 = 該標的已記錄 KO",
       aria: (tickers: string, ko: string, strike: string, ki: string | null) =>
@@ -673,7 +673,7 @@ const zhTW: Messages = {
       payment: "配息日",
       coupon: "票息",
       status: "狀態",
-      nonCall: "保障期",
+      nonCall: "配息保證期",
       note: (monthly: boolean, paid: number, total: number, pct: string) =>
         `配息時程由期初觀察日產生：每月觀察結束日遇週末順延至下一個營業日，配息日為其後 3 個營業日。${monthly ? "第 2 期起，每期的觀察結束日同時也是 KO 觀察日。" : ""}已配息 ${paid} / ${total} 期（本金的 ${pct}%）。`,
     },
